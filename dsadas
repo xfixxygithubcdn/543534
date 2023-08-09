@@ -1,0 +1,32 @@
+const fs = require('fs');
+
+const inputFilePath = 'veriler.txt';
+const outputDirectory = 'parcalar/';
+const chunkSize = 25 * 1024 * 1024; // 25 MB
+
+fs.mkdirSync(outputDirectory, { recursive: true });
+
+fs.readFile(inputFilePath, 'utf-8', (err, data) => {
+  if (err) {
+    console.error('Dosya okuma hatası:', err);
+    return;
+  }
+
+  const chunks = [];
+  for (let i = 0; i < data.length; i += chunkSize) {
+    chunks.push(data.slice(i, i + chunkSize));
+  }
+
+  chunks.forEach((chunk, index) => {
+    const chunkNumber = index + 1;
+    const outputFilePath = `${outputDirectory}parca_${chunkNumber}.txt`;
+
+    fs.writeFile(outputFilePath, chunk, 'utf-8', (err) => {
+      if (err) {
+        console.error(`Parça ${chunkNumber} kaydedilirken bir hata oluştu:`, err);
+      } else {
+        console.log(`Parça ${chunkNumber} başarıyla kaydedildi: ${outputFilePath}`);
+      }
+    });
+  });
+});
